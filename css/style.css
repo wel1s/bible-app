@@ -272,3 +272,20 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 .votd-head { flex-wrap: wrap; }
 .votd-head span, .votd-head a { white-space: nowrap; }
+
+/* ---- ouvrir le chapitre depuis un verset ---- */
+.passage .text[data-act='chapter'], .clickable { cursor: pointer; border-radius: 8px; transition: background 0.15s; }
+.passage .text[data-act='chapter']:hover, .clickable:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.passage.flash { animation: flash 1.6s ease-out; }
+@keyframes flash { 0%, 40% { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent); } }
+.back-link {
+  position: fixed; z-index: 15; top: calc(62px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+  max-width: calc(100% - 32px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 8px 16px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.15); text-decoration: none; font-weight: 600; font-size: 0.9rem;
+}
+.reader-head:has(.back-link) { padding-top: 64px; }
+.verse.target:has(+ .verse.target) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.verse.target + .verse.target { border-top-left-radius: 0; border-top-right-radius: 0; }
+.med-chapter-wrap { text-align: center; margin: 0 0 8px; }
+.med-chapter-wrap .btn { padding: 6px 14px; font-size: 0.9rem; }

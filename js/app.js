@@ -59,16 +59,17 @@ function passageCard(p, idx, opts = {}) {
   return `
   <article class="passage${opts.active ? ' active' : ''}" data-idx="${idx}" id="p-${idx}">
     <header>
-      <a class="ref" href="#/lire/${p.b}/${p.c}?v=${p.f}" title="Lire le chapitre">${esc(ref)}</a>
+      <a class="ref" href="${chapterHref(p)}" data-act="chapter" title="Lire tout le chapitre">${esc(ref)}</a>
       ${opts.badge ? `<span class="badge">${esc(opts.badge)}</span>` : ''}
     </header>
-    <p class="text">${passageText(p, opts.patterns)}</p>
+    <p class="text" data-act="chapter" title="Toucher pour lire tout le chapitre">${passageText(p, opts.patterns)}</p>
     ${note ? `<p class="note-preview">✎ ${esc(note)}</p>` : ''}
     <div class="actions">
       <button class="act" data-act="play" title="Écouter à partir d'ici">${ICONS.play}<span>Écouter</span></button>
       <button class="act" data-act="meditate" title="Méditer ce passage">${ICONS.medit}<span>Méditer</span></button>
       <button class="act${fav ? ' on' : ''}" data-act="fav" aria-pressed="${fav}" title="Ajouter à mes versets">${ICONS.heart}<span>${fav ? 'Gardé' : 'Garder'}</span></button>
       <button class="act${note ? ' on' : ''}" data-act="note" title="Écrire une note">${ICONS.note}<span>Note</span></button>
+      <button class="act" data-act="chapter" title="Lire tout le chapitre">${ICONS.book}<span>Chapitre ${p.c}</span></button>
     </div>
     <div class="note-editor" hidden>
       <textarea rows="3" placeholder="Ce que Dieu me dit à travers ce passage…">${esc(note)}</textarea>
@@ -104,6 +105,17 @@ function renderList(container, list, opts = {}) {
   list.ensureVisible = (idx) => {
     while (idx >= shown && more?.isConnected) more.click();
   };
+}
+
+/** Lien vers le chapitre complet, avec le ou les versets mis en évidence. */
+const chapterHref = (p) => `#/lire/${p.b}/${p.c}?v=${p.f}${p.t && p.t !== p.f ? `&to=${p.t}` : ''}`;
+
+// Page d'où l'on vient quand on ouvre un chapitre (pour y revenir au même endroit).
+let returnTo = null;
+function openChapter(p, idx = null) {
+  const here = location.hash || '#/';
+  if (!here.startsWith('#/lire/')) returnTo = { hash: here, idx };
+  location.hash = chapterHref(p);
 }
 
 const verseToPassage = (v) => ({ b: v.b, c: v.c, f: v.v, t: v.v, x: [v.t] });
@@ -145,9 +157,9 @@ function viewHome() {
 
     <section class="votd" style="--c:${votd.t.color}">
       <div class="votd-head"><span>Verset du jour</span><a href="#/theme/${votd.t.id}">${votd.t.icon} ${esc(votd.t.name)}</a></div>
-      <blockquote>${passageText(votd.p)}</blockquote>
+      <blockquote class="clickable" id="votd-text" title="Toucher pour lire tout le chapitre">${passageText(votd.p)}</blockquote>
       <div class="votd-foot">
-        <a class="ref" href="#/lire/${votd.p.b}/${votd.p.c}?v=${votd.p.f}">${esc(formatRef(votd.p.b, votd.p.c, votd.p.f, votd.p.t))}</a>
+        <a class="ref" href="${chapterHref(votd.p)}">${esc(formatRef(votd.p.b, votd.p.c, votd.p.f, votd.p.t))}</a>
         <span>
           <button class="btn ghost" data-votd="play">${ICONS.play} Écouter</button>
           <button class="btn ghost" data-votd="meditate">${ICONS.medit} Méditer</button>
@@ -177,6 +189,7 @@ function viewHome() {
     const q = new FormData(e.target).get('q').trim();
     if (q) location.hash = `#/recherche?q=${encodeURIComponent(q)}`;
   });
+  $('#votd-text').onclick = () => !window.getSelection()?.toString() && openChapter(votd.p);
   view.querySelectorAll('[data-votd]').forEach((b) =>
     b.addEventListener('click', () => {
       player.load(currentList, 0, b.dataset.votd === 'play');
@@ -344,6 +357,7 @@ async function viewReader(b, c, params) {
   b = Number(b);
   c = Number(c);
   const v = Number(params.get('v')) || 0;
+  const to = Math.max(v, Number(params.get('to')) || v);
   const book = BOOKS[b - 1];
   if (!book) return viewNotFound();
   view.innerHTML = loadingHTML();
@@ -369,6 +383,7 @@ async function viewReader(b, c, params) {
   const active = isPlayingList(list) ? player.state.index : -1;
   view.innerHTML = `
     <section class="page-head reader-head">
+      ${returnTo ? `<a class="back-link" href="${esc(returnTo.hash)}">← Retour ${esc(backLabel(returnTo.hash))}</a>` : ''}
       <div class="reader-nav">
         <select id="rd-book" aria-label="Livre">${BOOKS.map((x) => `<option value="${x.id}"${x.id === b ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select>
         <select id="rd-chap" aria-label="Chapitre">${Array.from({ length: n }, (_, i) => `<option${i + 1 === c ? ' selected' : ''}>${i + 1}</option>`).join('')}</select>
@@ -380,7 +395,7 @@ async function viewReader(b, c, params) {
     </section>
     <div class="chapter">${verses
       .map(
-        (x, i) => `<p class="verse${x.v === v ? ' target' : ''}${i === active ? ' active' : ''}" data-idx="${i}" id="p-${i}">
+        (x, i) => `<p class="verse${v && x.v >= v && x.v <= to ? ' target' : ''}${i === active ? ' active' : ''}" data-idx="${i}" id="p-${i}">
           <button class="vnum" data-act="menu" aria-label="Écouter depuis le verset ${x.v}" title="Écouter depuis ce verset">${x.v}</button>
           <span>${esc(x.t)}</span></p>`,
       )
@@ -393,6 +408,17 @@ async function viewReader(b, c, params) {
   $('#rd-chap').onchange = (e) => (location.hash = `#/lire/${b}/${e.target.value}`);
   $('#rd-listen').onclick = () => player.load(list, v ? v - 1 : 0, true);
   if (v) requestAnimationFrame(() => $(`#p-${v - 1}`)?.scrollIntoView({ block: 'center' }));
+}
+
+function backLabel(hash) {
+  const m = hash.match(/^#\/theme\/([^/?]+)/);
+  if (m) {
+    const t = THEMES.find((x) => x.id === decodeURIComponent(m[1]));
+    if (t) return `au thème « ${t.name} »`;
+  }
+  if (hash.startsWith('#/recherche')) return 'à la recherche';
+  if (hash.startsWith('#/mes-versets')) return 'à mes versets';
+  return "à l'accueil";
 }
 
 function viewMine(params) {
@@ -441,6 +467,12 @@ view.addEventListener('click', (e) => {
   const p = currentList?.items[idx];
   if (!p) return;
   switch (btn.dataset.act) {
+    case 'chapter':
+      e.preventDefault();
+      // ne pas changer de page si l'utilisateur sélectionne du texte pour le copier
+      if (btn.matches('.text') && window.getSelection()?.toString()) return;
+      openChapter(p, idx);
+      break;
     case 'play':
       if (isPlayingList(currentList)) player.goto(idx), player.state.status !== 'playing' && player.play();
       else player.load(currentList, idx, true);
@@ -568,12 +600,20 @@ function renderMeditation() {
   const s = player.state;
   $('#med-title').textContent = `${s.playlist.title} · ${s.index + 1}/${s.playlist.items.length}`;
   $('#med-ref').textContent = formatRef(p.b, p.c, p.f, p.t);
+  $('#med-chapter').textContent = `📖 Lire tout le chapitre ${p.c}`;
   $('#med-text').innerHTML = passageText(p);
   $('#med-note').value = store.getNote(p);
   $('#med-fav').classList.toggle('on', store.isFavorite(p));
   $('#med-status').textContent = statusText(s);
 }
 $('#med-close').onclick = closeMeditation;
+$('#med-chapter').onclick = () => {
+  const p = player.current;
+  if (!p) return;
+  const idx = isPlayingList(currentList) ? player.state.index : null;
+  closeMeditation();
+  openChapter(p, idx);
+};
 $('#med-prev').onclick = () => player.prev();
 $('#med-next').onclick = () => player.next();
 $('#med-toggle').onclick = () => player.toggle();
@@ -668,6 +708,21 @@ async function route() {
   else if (section === 'mes-versets') viewMine(params);
   else viewNotFound();
   if (isPlayingList(currentList)) markActive(player.state.index, false);
+
+  // Retour depuis un chapitre : on retrouve le passage d'où l'on était parti.
+  if (returnTo && section !== 'lire') {
+    const back = returnTo;
+    returnTo = null;
+    if (back.hash === location.hash && back.idx != null && currentList) {
+      currentList.ensureVisible?.(back.idx);
+      const el = $(`#p-${back.idx}`);
+      if (el) {
+        el.scrollIntoView({ block: 'center' });
+        el.classList.add('flash');
+        setTimeout(() => el.classList.remove('flash'), 1600);
+      }
+    }
+  }
 }
 
 async function start() {
