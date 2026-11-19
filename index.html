@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Bible par thèmes</title>
+    <meta name="description" content="Étudier, méditer et écouter la Bible par thèmes : amour, louange, foi, paix… (Louis Segond 1910)" />
+    <meta name="theme-color" content="#7a3e1d" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1b1613" media="(prefers-color-scheme: dark)" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/icon-180.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Bible thèmes" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#/" aria-label="Accueil">
+        <img src="icons/icon.svg" alt="" width="30" height="30" />
+        <span>Bible par thèmes</span>
+      </a>
+      <nav class="topnav">
+        <a href="#/" data-nav="home">Thèmes</a>
+        <a href="#/recherche" data-nav="search">Recherche</a>
+        <a href="#/lire/43/1" data-nav="read">Bible</a>
+        <a href="#/mes-versets" data-nav="mine">Mes versets</a>
+      </nav>
+    </header>
+
+    <main id="view" tabindex="-1"></main>
+
+    <!-- Lecteur audio -->
+    <section id="player" class="player" hidden aria-label="Lecteur audio">
+      <button class="player-info" id="pl-open" title="Mode méditation">
+        <span class="pl-title" id="pl-title"></span>
+        <span class="pl-ref" id="pl-ref"></span>
+      </button>
+      <div class="player-controls">
+        <button class="icon-btn" id="pl-prev" aria-label="Passage précédent">
+          <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z" /></svg>
+        </button>
+        <button class="icon-btn play" id="pl-toggle" aria-label="Lecture">
+          <svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+          <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+        </button>
+        <button class="icon-btn" id="pl-next" aria-label="Passage suivant">
+          <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z" /></svg>
+        </button>
+        <button class="icon-btn" id="pl-settings" aria-label="Réglages audio">
+          <svg viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z" /></svg>
+        </button>
+        <button class="icon-btn" id="pl-close" aria-label="Fermer le lecteur">
+          <svg viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z" /></svg>
+        </button>
+      </div>
+      <div class="pl-progress"><div id="pl-bar"></div></div>
+    </section>
+
+    <!-- Mode méditation -->
+    <section id="meditation" class="meditation" hidden aria-label="Mode méditation">
+      <div class="med-top">
+        <span id="med-title"></span>
+        <button class="icon-btn" id="med-close" aria-label="Fermer la méditation">
+          <svg viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z" /></svg>
+        </button>
+      </div>
+      <div class="med-body">
+        <p class="med-ref" id="med-ref"></p>
+        <blockquote class="med-text" id="med-text"></blockquote>
+        <p class="med-status" id="med-status"></p>
+        <details class="med-guide">
+          <summary>Pistes pour méditer</summary>
+          <ol>
+            <li><strong>Lire</strong> lentement, deux ou trois fois. Quel mot vous touche ?</li>
+            <li><strong>Comprendre</strong> : que dit ce passage de Dieu ? de moi ?</li>
+            <li><strong>Prier</strong> : transformez ce verset en prière personnelle.</li>
+            <li><strong>Vivre</strong> : quelle réponse concrète aujourd'hui ?</li>
+          </ol>
+        </details>
+        <label class="med-note">
+          <span>Ma méditation</span>
+          <textarea id="med-note" rows="3" placeholder="Ce que Dieu me dit à travers ce passage…"></textarea>
+        </label>
+      </div>
+      <div class="med-controls">
+        <button class="icon-btn" id="med-prev" aria-label="Passage précédent">
+          <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z" /></svg>
+        </button>
+        <button class="icon-btn play big" id="med-toggle" aria-label="Lecture">
+          <svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+          <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+        </button>
+        <button class="icon-btn" id="med-next" aria-label="Passage suivant">
+          <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z" /></svg>
+        </button>
+        <button class="icon-btn" id="med-fav" aria-label="Ajouter à mes versets">
+          <svg viewBox="0 0 24 24"><path d="M12 21.4 10.6 20C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1C13.1 3.8 14.8 3 16.5 3 19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.6 11.5z" /></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Réglages audio -->
+    <dialog id="settings" class="sheet">
+      <form method="dialog">
+        <h2>Réglages de l'écoute</h2>
+        <label>Voix
+          <select id="set-voice"></select>
+        </label>
+        <p class="hint" id="voice-hint"></p>
+        <label>Vitesse : <output id="rate-out"></output>
+          <input type="range" id="set-rate" min="0.6" max="1.4" step="0.05" />
+        </label>
+        <label>Silence pour méditer entre les passages
+          <select id="set-gap">
+            <option value="0">Aucun</option>
+            <option value="2">2 secondes</option>
+            <option value="4">4 secondes</option>
+            <option value="8">8 secondes</option>
+            <option value="15">15 secondes</option>
+            <option value="30">30 secondes</option>
+            <option value="60">1 minute</option>
+          </select>
+        </label>
+        <label>Lire chaque passage
+          <select id="set-repeat">
+            <option value="1">1 fois</option>
+            <option value="2">2 fois</option>
+            <option value="3">3 fois</option>
+          </select>
+        </label>
+        <label>Arrêt automatique
+          <select id="set-sleep">
+            <option value="0">Désactivé</option>
+            <option value="10">Après 10 minutes</option>
+            <option value="20">Après 20 minutes</option>
+            <option value="30">Après 30 minutes</option>
+            <option value="60">Après 1 heure</option>
+          </select>
+        </label>
+        <label class="check"><input type="checkbox" id="set-ref" /> Annoncer la référence (ex. « Jean, chapitre 3, verset 16 »)</label>
+        <label class="check"><input type="checkbox" id="set-loop" /> Recommencer au début à la fin de la liste</label>
+        <label>Taille du texte
+          <input type="range" id="set-font" min="0.85" max="1.5" step="0.05" />
+        </label>
+        <button class="btn primary" value="close">Fermer</button>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "bible-par-themes",
+  "version": "1.0.0",
+  "description": "Étudier, méditer et écouter la Bible par thèmes (Louis Segond 1910).",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "build": "node tools/build.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "license": "MIT"
+}
