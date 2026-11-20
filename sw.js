@@ -1,5 +1,5 @@
 // Service worker : l'application et la Bible complète restent disponibles hors connexion.
-const VERSION = 'v2';
+const VERSION = 'v3';
 const CACHE = `bible-themes-${VERSION}`;
 const ASSETS = [
   './',
@@ -10,6 +10,8 @@ const ASSETS = [
   'js/bible.js',
   'js/books.js',
   'js/store.js',
+  'js/speech-text.js',
+  'data/audio.json',
   'data/themes.json',
   'data/bible.json',
   'manifest.webmanifest',
@@ -36,6 +38,8 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== location.origin) return;
+  // Fichiers audio : laissés au navigateur (requêtes partielles « Range » nécessaires à la lecture).
+  if (url.pathname.includes('/audio/')) return;
   e.respondWith(
     fetch(e.request)
       .then((res) => {

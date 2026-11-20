@@ -4,7 +4,7 @@ import {
   queryToPatterns, matchRanges, matchThemes, testamentOf,
 } from './bible.js';
 import { store, passageKey } from './store.js';
-import { player, ttsSupported, frenchVoices } from './audio.js';
+import { player, ttsSupported, frenchVoices, setAudioManifest, playlistHasFiles } from './audio.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const view = $('#view');
@@ -199,7 +199,18 @@ function viewHome() {
 }
 
 function footerHTML() {
-  return `<footer class="foot">Texte biblique : Louis Segond 1910 (domaine public). Audio : synthèse vocale de votre appareil.</footer>`;
+  return `<footer class="foot">Texte biblique : Louis Segond 1910 (domaine public).
+    Audio des versets clés : voix « siwis » (Piper, données SIWIS, CC-BY 4.0) ; ailleurs, voix de votre appareil.</footer>`;
+}
+
+/** Indique si la liste peut être écoutée écran éteint. */
+function audioNote(list) {
+  if (!list?.items.length) return '';
+  if (playlistHasFiles(list)) {
+    return `<p class="audio-note ok">🔒 Écoute possible <strong>écran éteint</strong> ou en utilisant d'autres applications.</p>`;
+  }
+  return `<p class="audio-note">📱 Ici, la lecture utilise la voix du téléphone : <strong>gardez l'écran allumé</strong> pendant l'écoute.
+    Les <a href="#/">versets clés des thèmes</a> s'écoutent aussi écran éteint.</p>`;
 }
 
 async function viewTheme(id, tab, params) {
@@ -229,6 +240,7 @@ async function viewTheme(id, tab, params) {
   if (tab !== 'bible') {
     list = { id: `theme:${id}`, title: theme.name, items: theme.passages, route: location.hash };
     currentList = list;
+    $('#theme-filters').innerHTML = audioNote(list);
     renderList(listEl, list);
   } else {
     listEl.innerHTML = loadingHTML();
@@ -269,7 +281,8 @@ async function viewTheme(id, tab, params) {
           .map(([k, l]) => `<a class="chip${k === testament ? ' on' : ''}" href="#/theme/${id}/bible${k ? '?t=' + k : ''}">${l}</a>`)
           .join('')}
         <span class="count">${filtered.length} versets</span>
-      </div>`;
+      </div>
+      ${audioNote(list)}`;
     renderList(listEl, list, { patterns: theme.keywords });
   }
 }
@@ -343,6 +356,7 @@ async function viewSearch(params) {
   const patterns = queryToPatterns(q);
   html += `<div class="results-head"><h2 class="section-title">${verses.length} verset${verses.length > 1 ? 's' : ''} contenant « ${esc(q)} »</h2>
     ${verses.length ? `<button class="btn ghost" id="listen-results">${ICONS.headphones} Tout écouter</button>` : ''}</div>
+    ${audioNote(list)}
     <div id="result-list"></div>`;
   res.innerHTML = html;
   if (!verses.length) {
@@ -393,6 +407,7 @@ async function viewReader(b, c, params) {
         <button class="btn primary" id="rd-listen">${ICONS.headphones} Écouter le chapitre${v ? ` depuis le verset ${v}` : ''}</button>
       </div>
     </section>
+    ${audioNote(list)}
     <div class="chapter">${verses
       .map(
         (x, i) => `<p class="verse${v && x.v >= v && x.v <= to ? ' target' : ''}${i === active ? ' active' : ''}" data-idx="${i}" id="p-${i}">
@@ -431,7 +446,7 @@ function viewMine(params) {
       <h1>Mes versets</h1>
       <p>Les passages que vous gardez et vos notes de méditation restent sur cet appareil.</p>
       ${items.length ? `<div class="hero-actions"><button class="btn primary" id="mine-listen">${ICONS.headphones} Tout écouter</button>
-        <button class="btn ghost" id="mine-med">${ICONS.medit} Méditer un à un</button></div>` : ''}
+        <button class="btn ghost" id="mine-med">${ICONS.medit} Méditer un à un</button></div>${audioNote(list)}` : ''}
     </section>
     <nav class="tabs" role="tablist">
       <a role="tab" href="#/mes-versets" aria-selected="${tab === 'fav'}">Gardés <span>${store.favorites().length}</span></a>
@@ -537,7 +552,7 @@ function statusText(s) {
   if (s.error) return s.error;
   if (s.status === 'waiting') return s.countdown > 0 ? `Silence pour méditer… ${s.countdown} s` : 'Passage suivant…';
   if (s.status === 'paused') return s.ended ? 'Terminé' : 'En pause';
-  if (s.status === 'playing') return 'Lecture en cours';
+  if (s.status === 'playing') return s.background ? 'Lecture · écran éteint possible 🔒' : 'Lecture (gardez l’écran allumé)';
   return '';
 }
 
@@ -646,11 +661,13 @@ function fillVoices() {
     ? voices.map((v) => `<option value="${esc(v.voiceURI)}">${esc(v.name)} (${esc(v.lang)})</option>`).join('')
     : '<option value="">Voix par défaut</option>';
   sel.value = store.settings.voice || voices[0]?.voiceURI || '';
-  $('#voice-hint').textContent = !ttsSupported
-    ? "Ce navigateur ne propose pas la lecture à voix haute. Essayez Chrome, Edge ou Safari."
-    : voices.length
-      ? 'Les voix « naturelles » ou « Google » sont les plus agréables à écouter.'
-      : "Aucune voix française trouvée : installez-en une dans les réglages de votre appareil (Synthèse vocale).";
+  $('#voice-hint').textContent =
+    'Les versets clés des thèmes sont lus par la voix enregistrée de l’application (écoute écran éteint possible). ' +
+    (!ttsSupported
+      ? 'Ailleurs, ce navigateur ne propose pas de lecture à voix haute.'
+      : voices.length
+        ? 'Ailleurs (chapitres, recherche), c’est la voix choisie ici qui lit : les voix « naturelles » ou « Google » sont les plus agréables.'
+        : 'Ailleurs, aucune voix française n’est installée sur cet appareil (réglages → synthèse vocale).');
 }
 function openSettings() {
   const s = store.settings;
@@ -728,7 +745,13 @@ async function route() {
 async function start() {
   applyFont();
   try {
-    THEMES = await loadThemes();
+    [THEMES] = await Promise.all([
+      loadThemes(),
+      fetch('data/audio.json')
+        .then((r) => (r.ok ? r.json() : null))
+        .then(setAudioManifest)
+        .catch(() => {}),
+    ]);
   } catch (e) {
     view.innerHTML = `<p class="empty">${esc(e.message)}</p>`;
     return;

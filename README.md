@@ -13,7 +13,7 @@ Texte : **Louis Segond 1910** (domaine public), toute la Bible (66 livres, 31 10
   Reconnaissance · Le Saint-Esprit · Humilité · La Parole de Dieu · Fidélité de Dieu · Patience et persévérance · Vie éternelle.
 - **« Toute la Bible »** pour chaque thème : tous les versets qui contiennent les mots du thème
   (ex. pour l'amour : *amour, aimer, aimé, charité…* → 593 versets), avec filtre Ancien / Nouveau Testament.
-- **Écoute audio** : la liste des versets est lue à voix haute l'un après l'autre
+- **Écoute audio, même écran éteint** : la liste des versets est lue à voix haute l'un après l'autre
   - annonce de la référence (« Jean, chapitre 3, verset 16 »)
   - **silence pour méditer** entre les passages (de 0 s à 1 min)
   - répéter chaque passage 1, 2 ou 3 fois, lecture en boucle
@@ -53,17 +53,26 @@ L'application sera alors disponible à l'adresse `https://<votre-compte>.github.
 
 ## À propos de l'audio
 
-L'audio utilise la **synthèse vocale de l'appareil** (Web Speech API) : aucune connexion n'est nécessaire et
-tout le texte de la Bible peut être écouté. La qualité dépend des voix installées :
+Il y a deux façons de lire à voix haute :
 
-- **Android** : Réglages → Accessibilité → Synthèse vocale → installer la voix *Français* de Google.
-- **iPhone** : Réglages → Accessibilité → Contenu énoncé → Voix → Français → télécharger une voix « améliorée ».
-- **Windows / Edge** : les voix « Natural » en ligne sont très agréables.
+1. **Versets clés des thèmes : fichiers audio enregistrés** (dossier `audio/`, 436 passages, 1,2 h, ~30 Mo),
+   générés avec la voix de synthèse neuronale libre « siwis » ([Piper](https://github.com/rhasspy/piper),
+   données SIWIS, licence CC-BY 4.0). Ils sont lus comme de la musique : **l'écoute continue écran éteint**
+   ou pendant que vous utilisez d'autres applications, avec les commandes (pause, suivant…) sur l'écran de
+   verrouillage. Les silences de méditation sont eux aussi des fichiers audio, pour que le téléphone ne
+   coupe pas le son entre deux passages.
+2. **Tout le reste (chapitres, recherche, « Toute la Bible ») : voix de l'appareil** (Web Speech API).
+   Elle s'arrête si l'écran s'éteint (limite des navigateurs) ; l'application garde donc l'écran allumé.
+   Pour une voix plus agréable :
+   - **Android** : Réglages → Accessibilité → Synthèse vocale → installer la voix *Français* de Google.
+   - **iPhone** : Réglages → Accessibilité → Contenu énoncé → Voix → Français → voix « améliorée ».
 
-Choisissez ensuite la voix dans l'application (bouton ⚙ du lecteur).
+Régénérer les fichiers audio après une modification des thèmes (seuls les passages nouveaux ou modifiés sont produits) :
 
-> Limite connue : sur certains téléphones, la lecture s'interrompt si l'écran est verrouillé.
-> L'application garde l'écran allumé pendant l'écoute pour l'éviter.
+```bash
+pip install piper-tts      # + ffmpeg
+npm run build && npm run build:audio
+```
 
 ## Ajouter ou modifier un thème
 
@@ -99,7 +108,8 @@ Après une modification, changez `VERSION` dans `sw.js` pour que les téléphone
 index.html            page unique de l'application
 css/style.css         mise en page (clair / sombre, mobile)
 js/app.js             vues : thèmes, recherche, lecture, mes versets, méditation
-js/audio.js           lecteur audio (synthèse vocale, pauses, répétition, minuterie)
+js/audio.js           lecteur audio (fichiers MP3 ou voix de l'appareil, pauses, répétition, minuterie)
+audio/                enregistrements des passages clés (générés par tools/build_audio.py)
 js/bible.js           chargement des données et recherche
 js/books.js           livres de la Bible, analyse des références
 js/store.js           favoris, notes et réglages (stockés sur l'appareil)
@@ -112,7 +122,7 @@ sw.js                 fonctionnement hors connexion
 
 ## Pistes pour la suite
 
-- Enregistrements audio d'une voix humaine (fichiers MP3 par chapitre) en plus de la synthèse vocale.
+- Enregistrements des chapitres complets (nécessite un hébergement plus grand que GitHub Pages).
 - Publication sur le Play Store / App Store en emballant cette application avec Capacitor.
 - Plans de méditation (« 7 jours sur l'amour »), partage d'un verset en image, autres traductions.
 

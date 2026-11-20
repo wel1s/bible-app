@@ -289,3 +289,7 @@ mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1
 .verse.target + .verse.target { border-top-left-radius: 0; border-top-right-radius: 0; }
 .med-chapter-wrap { text-align: center; margin: 0 0 8px; }
 .med-chapter-wrap .btn { padding: 6px 14px; font-size: 0.9rem; }
+
+/* ---- écoute écran éteint ---- */
+.audio-note { font-size: 0.86rem; color: var(--muted); background: var(--surface-2); border-radius: 10px; padding: 8px 12px; margin: 8px 0 12px; }
+.audio-note.ok { background: color-mix(in srgb, #2f855a 12%, var(--surface)); color: var(--text); }

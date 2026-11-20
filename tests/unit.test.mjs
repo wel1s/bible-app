@@ -67,3 +67,18 @@ test('données : thèmes valides et Bible complète', () => {
   assert.equal(bible.b[42][2][15].startsWith('Car Dieu a tant aimé le monde'), true);
   assert.ok(!bible.b.flat(2).some((v) => v.includes("''")));
 });
+
+test('audio : chaque passage clé a son enregistrement', async () => {
+  const { existsSync } = await import('node:fs');
+  const themes = JSON.parse(readFileSync(new URL('../data/themes.json', import.meta.url)));
+  const audio = JSON.parse(readFileSync(new URL('../data/audio.json', import.meta.url)));
+  const missing = [];
+  for (const t of themes)
+    for (const p of t.passages) {
+      const key = `${p.b}-${p.c}-${p.f}-${p.t}`;
+      for (const f of [`audio/${key}.mp3`, `audio/ref/${key}.mp3`])
+        if (!audio.items[key] || !existsSync(new URL(`../${f}`, import.meta.url))) missing.push(f);
+    }
+  assert.deepEqual(missing, [], 'lancez : npm run build:audio');
+  for (const n of audio.silences) assert.ok(existsSync(new URL(`../audio/silence-${n}.mp3`, import.meta.url)));
+});

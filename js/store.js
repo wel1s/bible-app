@@ -5,7 +5,7 @@ const defaults = () => ({
   favorites: {}, // clé "b:c:f-t" -> { b, c, f, t, x, added }
   notes: {}, // clé -> { text, updated }
   settings: {
-    rate: 0.9,
+    rate: 1,
     voice: '',
     gap: 4, // secondes de silence entre deux passages
     repeat: 1,
