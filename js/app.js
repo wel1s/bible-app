@@ -290,7 +290,7 @@ async function viewTheme(id, tab, params) {
 function sampleWords(theme) {
   const words = {
     amour: 'amour, aimer, charité', louange: 'louange, louer, célébrer, exalter, cantique', foi: 'foi, croire, croyant',
-    esperance: 'espérance, espérer', paix: 'paix, paisible', joie: 'joie, se réjouir, allégresse', pardon: 'pardon, pardonner, miséricorde',
+    esperance: 'espérance, espérer', paix: 'paix, paisible', joie: 'joie, se réjouir, allégresse', pardon: 'pardon, pardonner, rémission', misericorde: 'miséricorde, compassion, pitié',
     priere: 'prière, prier, invoquer, exaucer', grace: 'grâce, salut, sauver, rédemption', force: 'fortifier, courage, ne crains point',
     protection: 'refuge, bouclier, forteresse, confiance', consolation: 'consoler, larmes, affliction, épreuve', guerison: 'guérir, malade, santé',
     sagesse: 'sage, sagesse, intelligence, discernement', provision: 'pourvoir, besoins, nourrir, abondance, bénédiction',

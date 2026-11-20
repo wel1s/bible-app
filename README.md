@@ -7,8 +7,8 @@ Texte : **Louis Segond 1910** (domaine public), toute la Bible (66 livres, 31 10
 
 ## Fonctionnalités
 
-- **22 thèmes** avec plus de 450 passages clés choisis pour la méditation :
-  Amour · Louange et adoration · Foi · Espérance · Paix · Joie · Pardon et miséricorde · Prière · Grâce et salut ·
+- **23 thèmes** avec plus de 500 passages clés choisis pour la méditation :
+  Amour · Louange et adoration · Foi · Espérance · Paix · Joie · La miséricorde de Dieu · Le pardon · Prière · Grâce et salut ·
   Force et courage · Protection et confiance · Consolation dans l'épreuve · Guérison · Sagesse · Dieu pourvoit ·
   Reconnaissance · Le Saint-Esprit · Humilité · La Parole de Dieu · Fidélité de Dieu · Patience et persévérance · Vie éternelle.
 - **« Toute la Bible »** pour chaque thème : tous les versets qui contiennent les mots du thème
@@ -55,7 +55,7 @@ L'application sera alors disponible à l'adresse `https://<votre-compte>.github.
 
 Il y a deux façons de lire à voix haute :
 
-1. **Versets clés des thèmes : fichiers audio enregistrés** (dossier `audio/`, 436 passages, 1,2 h, ~30 Mo),
+1. **Versets clés des thèmes : fichiers audio enregistrés** (dossier `audio/`, 476 passages, 1,3 h, ~32 Mo),
    générés avec la voix de synthèse neuronale libre « siwis » ([Piper](https://github.com/rhasspy/piper),
    données SIWIS, licence CC-BY 4.0). Ils sont lus comme de la musique : **l'écoute continue écran éteint**
    ou pendant que vous utilisez d'autres applications, avec les commandes (pause, suivant…) sur l'écran de

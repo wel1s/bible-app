@@ -1,5 +1,5 @@
 // Service worker : l'application et la Bible complète restent disponibles hors connexion.
-const VERSION = 'v3';
+const VERSION = 'v4';
 const CACHE = `bible-themes-${VERSION}`;
 const ASSETS = [
   './',
