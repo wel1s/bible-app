@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Vidéo de présentation</title>
+<style>
+  html, body { margin: 0; width: 540px; height: 960px; overflow: hidden; background: #0b0705; }
+  body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  .bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 45% at 50% 58%, rgb(150 82 40 / 0.45), transparent 70%),
+      radial-gradient(ellipse 90% 60% at 50% 110%, rgb(120 60 30 / 0.35), transparent 70%),
+      linear-gradient(180deg, #120c09 0%, #1d130e 55%, #0b0705 100%);
+  }
+  .rays { position: absolute; inset: -20%; background: conic-gradient(from 200deg at 50% 30%, transparent 0deg, rgb(255 210 160 / 0.05) 12deg, transparent 24deg, rgb(255 210 160 / 0.04) 40deg, transparent 52deg); }
+  .floor { position: absolute; left: 50%; top: 80%; width: 420px; height: 70px; margin-left: -210px; border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgb(0 0 0 / 0.55), transparent 70%); filter: blur(10px); }
+  .stage { position: absolute; inset: 0; perspective: 1000px; perspective-origin: 50% 45%; }
+  .phone {
+    position: absolute; left: 50%; top: 50%; width: 418px; height: 872px; margin: -436px 0 0 -209px;
+    transform-style: preserve-3d; will-change: transform;
+  }
+  .body {
+    position: absolute; inset: 0; border-radius: 66px; padding: 14px;
+    background: linear-gradient(135deg, #8d8f99, #3b3d45 30%, #1b1c21 60%, #5a5c66);
+    box-shadow: 0 0 0 2px #0e0f12 inset, 0 40px 80px rgb(0 0 0 / 0.6), 0 10px 30px rgb(0 0 0 / 0.5);
+  }
+  .btn-side { position: absolute; width: 4px; border-radius: 2px; background: linear-gradient(90deg, #2a2b31, #777a84); }
+  .screen { position: relative; width: 390px; height: 844px; border-radius: 54px; overflow: hidden; background: #faf6ef; }
+  .status { position: absolute; top: 0; left: 0; right: 0; height: 47px; display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 30px 0 44px; font-weight: 600; font-size: 16px; color: #2a211b; background: #faf6ef; z-index: 2; box-sizing: border-box; }
+  .island { position: absolute; top: 11px; left: 50%; width: 120px; height: 34px; margin-left: -60px; background: #000; border-radius: 20px; z-index: 3; }
+  .icons { display: flex; gap: 6px; align-items: center; }
+  .icons i { display: inline-block; background: #2a211b; border-radius: 2px; }
+  iframe { position: absolute; top: 47px; left: 0; width: 390px; height: 797px; border: 0; background: #faf6ef; }
+  .glare { position: absolute; inset: 0; border-radius: 54px; pointer-events: none; z-index: 4;
+    background: linear-gradient(115deg, rgb(255 255 255 / 0.16) 0%, rgb(255 255 255 / 0) 35%, rgb(255 255 255 / 0) 70%, rgb(255 255 255 / 0.06) 100%); }
+  .ripple { position: absolute; z-index: 5; width: 70px; height: 70px; margin: -35px 0 0 -35px; border-radius: 50%;
+    border: 3px solid rgb(255 255 255 / 0.95); background: rgb(255 255 255 / 0.25);
+    box-shadow: 0 0 18px rgb(255 255 255 / 0.7), 0 0 0 6px rgb(0 0 0 / 0.08); opacity: 0; }
+
+  .caption { position: absolute; left: 0; right: 0; top: 0; padding: 54px 30px 70px; text-align: center; color: #fff;
+    background: linear-gradient(180deg, rgb(11 7 5 / 0.85) 0%, rgb(11 7 5 / 0.55) 60%, transparent 100%); opacity: 0; z-index: 10; }
+  .caption h1 { margin: 0 0 8px; font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 40px; line-height: 1.1; font-weight: 700; letter-spacing: 0.2px; }
+  .caption p { margin: 0; font-size: 19px; color: #f6d9bd; font-weight: 500; }
+
+  .endcard { position: absolute; left: 0; right: 0; top: 130px; text-align: center; color: #fff; opacity: 0; z-index: 10; }
+  .endcard img { width: 120px; height: 120px; border-radius: 28px; box-shadow: 0 16px 40px rgb(0 0 0 / 0.5); }
+  .endcard h1 { font-family: 'Iowan Old Style', Palatino, Georgia, serif; font-size: 46px; margin: 22px 0 8px; }
+  .endcard p { margin: 0 0 22px; color: #f6d9bd; font-size: 18px; }
+  .endcard .url { display: inline-block; padding: 12px 22px; border-radius: 999px; background: #fff; color: #7a3e1d; font-weight: 700; font-size: 19px; }
+  .endcard .tags { margin-top: 18px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; padding: 0 30px; }
+  .endcard .tags span { border: 1px solid rgb(255 255 255 / 0.35); color: #fff; border-radius: 999px; padding: 6px 12px; font-size: 14px; }
+</style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="rays"></div>
+  <div class="floor" id="floor"></div>
+  <div class="stage">
+    <div class="phone" id="phone">
+      <div class="btn-side" style="left:-3px;top:180px;height:34px"></div>
+      <div class="btn-side" style="left:-3px;top:240px;height:64px"></div>
+      <div class="btn-side" style="left:-3px;top:318px;height:64px"></div>
+      <div class="btn-side" style="right:-3px;top:260px;height:100px"></div>
+      <div class="body">
+        <div class="screen" id="screen">
+          <div class="status"><span>9:41</span>
+            <span class="icons"><i style="width:17px;height:11px"></i><i style="width:15px;height:11px;border-radius:6px"></i><i style="width:26px;height:12px;border-radius:4px"></i></span>
+          </div>
+          <div class="island"></div>
+          <iframe id="app" src="/index.html#/"></iframe>
+          <div class="ripple" id="ripple"></div>
+          <div class="glare"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="caption" id="caption"><h1></h1><p></p></div>
+  <div class="endcard" id="endcard">
+    <img src="/icons/icon-512.png" alt="" />
+    <h1>Bible par thèmes</h1>
+    <p>Étudier · Écouter · Méditer</p>
+    <span class="url">wel1s.github.io/bible-app</span>
+    <div class="tags"><span>23 thèmes</span><span>Audio écran éteint</span><span>Hors connexion</span><span>Louis Segond 1910</span><span>Gratuit</span></div>
+  </div>
+
+<script>
+// ---------------------------------------------------------------------------------
+// Scénario de la vidéo. Le temps t (secondes) est piloté image par image par render.cjs.
+// ---------------------------------------------------------------------------------
+const DURATION = 41;
+
+// Caméra : position / échelle / rotations du téléphone (images clés, interpolées en douceur)
+const CAMERA = [
+  [0.0, { x: 10, y: 150, s: 0.58, rx: 18, ry: -38, rz: 8 }],
+  [4.2, { x: 0, y: 120, s: 0.68, rx: 12, ry: -22, rz: 5 }],
+  [5.6, { x: -20, y: 160, s: 1.28, rx: 24, ry: 22, rz: -7 }],
+  [9.6, { x: -10, y: 130, s: 1.2, rx: 18, ry: 14, rz: -5 }],
+  [10.8, { x: 0, y: 125, s: 0.76, rx: 12, ry: 26, rz: -5 }],
+  [15.5, { x: 0, y: 120, s: 0.78, rx: 10, ry: -18, rz: 4 }],
+  [17.0, { x: 30, y: -160, s: 1.32, rx: 26, ry: -22, rz: 6 }],
+  [20.6, { x: 20, y: -140, s: 1.26, rx: 20, ry: -14, rz: 5 }],
+  [21.6, { x: 0, y: 125, s: 0.78, rx: 12, ry: 24, rz: -4 }],
+  [26.0, { x: 0, y: 120, s: 0.8, rx: 10, ry: 10, rz: -2 }],
+  [27.2, { x: 0, y: 125, s: 0.78, rx: 12, ry: -24, rz: 5 }],
+  [28.8, { x: -15, y: 140, s: 1.26, rx: 22, ry: 18, rz: -5 }],
+  [31.2, { x: -10, y: 130, s: 1.2, rx: 16, ry: 12, rz: -3 }],
+  [32.2, { x: 0, y: 125, s: 0.78, rx: 12, ry: -26, rz: 5 }],
+  [35.6, { x: 0, y: 120, s: 0.8, rx: 10, ry: 18, rz: -3 }],
+  [37.6, { x: 0, y: 420, s: 0.5, rx: 34, ry: -30, rz: 8 }],
+  [41.0, { x: 0, y: 430, s: 0.48, rx: 30, ry: -48, rz: 9 }],
+];
+
+const CAPTIONS = [
+  [0.4, 4.4, 'Bible par thèmes', 'Étudier, écouter et méditer la Parole'],
+  [4.9, 10.2, 'Choisissez un thème', 'Amour, louange, foi, paix, pardon… 23 thèmes'],
+  [10.7, 16.0, 'Écoutez les versets', 'Même écran éteint 🔒'],
+  [16.4, 21.2, 'Prenez le temps', 'Un silence pour méditer entre chaque passage'],
+  [21.7, 26.4, 'Touchez un verset', 'Le chapitre complet s’ouvre'],
+  [26.9, 31.6, 'Mode méditation', 'Un verset à la fois et vos notes personnelles'],
+  [32.1, 35.8, 'Recherchez', 'Un mot, une expression ou une référence'],
+];
+
+// Défilement de l'application : [début, fin, de, à] (en pixels)
+const SCROLLS = [
+  [5.4, 8.4, 0, 640],
+  [13.0, 16.2, 0, 380],
+  [22.6, 25.8, null, null], // géré par l'action : léger défilement du chapitre
+  [33.0, 35.4, 0, 520],
+];
+
+// Actions dans l'application : [t, type, sélecteur ou valeur]
+const ACTIONS = [
+  [0.0, 'hash', '#/'],
+  [8.8, 'tap', '.theme-card:first-child'],
+  [9.3, 'click', '.theme-card:first-child'],
+  [11.0, 'tap', '#listen-all'],
+  [11.3, 'click', '#listen-all'],
+  [21.0, 'tap', '#p-1 .text'],
+  [21.35, 'click', '#p-1 .text'],
+  [26.5, 'hash', '#/theme/paix'],
+  [27.3, 'tap', '#meditate-all'],
+  [27.6, 'click', '#meditate-all'],
+  [32.0, 'click', '#med-close'],
+  [32.05, 'hash', '#/recherche?q=berger'],
+  [36.0, 'hash', '#/'],
+];
+const TYPE_NOTE = [28.6, 31.0, 'Que ta paix garde mon cœur aujourd’hui.'];
+const TAPS = ACTIONS.filter((a) => a[1] === 'tap').map((a) => a[0]);
+
+// ---------------------------------------------------------------------------------
+const $ = (s) => document.querySelector(s);
+const frame = $('#app');
+const ease = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, u) => a + (b - a) * u;
+
+function camera(t) {
+  let i = 0;
+  while (i < CAMERA.length - 2 && t > CAMERA[i + 1][0]) i++;
+  const [t0, a] = CAMERA[i];
+  const [t1, b] = CAMERA[i + 1];
+  const u = ease(clamp((t - t0) / (t1 - t0)));
+  const c = {};
+  for (const k in a) c[k] = lerp(a[k], b[k], u);
+  // léger flottement permanent
+  c.y += Math.sin(t * 1.3) * 6;
+  c.rz += Math.sin(t * 0.9) * 0.8;
+  return c;
+}
+
+let doneActions = 0;
+let rippleAt = null;
+const appDoc = () => frame.contentDocument;
+const appWin = () => frame.contentWindow;
+
+function rectOf(sel) {
+  const el = appDoc().querySelector(sel);
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top + Math.min(r.height / 2, 60) + 47 };
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function runAction([t, type, arg]) {
+  const d = appDoc();
+  if (type === 'hash') {
+    appWin().location.hash = arg;
+    await sleep(700);
+  } else if (type === 'tap') {
+    const p = rectOf(arg);
+    if (p) rippleAt = { t, ...p };
+  } else if (type === 'click') {
+    const el = d.querySelector(arg);
+    if (el) el.click();
+    await sleep(700);
+  }
+}
+
+window.renderAt = async function (t) {
+  // l'application peut faire défiler la page parente (scrollIntoView) : on la remet en place
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = document.body.scrollTop = 0;
+  // actions dues
+  while (doneActions < ACTIONS.length && ACTIONS[doneActions][0] <= t) {
+    await runAction(ACTIONS[doneActions++]);
+  }
+  // défilement
+  for (const [t0, t1, y0, y1] of SCROLLS) {
+    if (t >= t0 && t <= t1 + 0.05) {
+      const u = ease(clamp((t - t0) / (t1 - t0)));
+      if (y0 === null) {
+        appWin().scrollBy(0, 0);
+        const base = window.__chapterBase ?? (window.__chapterBase = appWin().scrollY);
+        appWin().scrollTo(0, base + u * 160);
+      } else appWin().scrollTo(0, lerp(y0, y1, u));
+    }
+  }
+  // note tapée en mode méditation
+  const [n0, n1, text] = TYPE_NOTE;
+  if (t >= n0 && t <= n1 + 0.1) {
+    const ta = appDoc().querySelector('#med-note');
+    if (ta) ta.value = text.slice(0, Math.round(text.length * clamp((t - n0) / (n1 - n0))));
+  }
+  window.scrollTo(0, 0);
+  // caméra
+  const c = camera(t);
+  $('#phone').style.transform =
+    `translate(${c.x}px, ${c.y}px) scale(${c.s}) rotateX(${c.rx}deg) rotateY(${c.ry}deg) rotateZ(${c.rz}deg)`;
+  $('#floor').style.transform = `translateY(${(c.y - 110) * 0.6}px) scale(${0.5 + c.s * 0.6})`;
+  $('#floor').style.opacity = clamp(1.3 - c.s * 0.6);
+  // effet de toucher
+  const rp = $('#ripple');
+  if (rippleAt && t - rippleAt.t < 0.8) {
+    const u = (t - rippleAt.t) / 0.8;
+    rp.style.left = rippleAt.x + 'px';
+    rp.style.top = rippleAt.y + 'px';
+    rp.style.opacity = u < 0.15 ? u / 0.15 : 1 - (u - 0.15) / 0.85;
+    rp.style.transform = `scale(${0.6 + u * 0.9})`;
+  } else rp.style.opacity = 0;
+  // légendes
+  const cap = CAPTIONS.find(([a, b]) => t >= a - 0.4 && t <= b + 0.4);
+  const ce = $('#caption');
+  if (cap) {
+    const [a, b, h, p] = cap;
+    if (ce.dataset.h !== h) {
+      ce.dataset.h = h;
+      ce.querySelector('h1').textContent = h;
+      ce.querySelector('p').textContent = p;
+    }
+    const o = clamp(Math.min((t - (a - 0.4)) / 0.4, (b + 0.4 - t) / 0.4));
+    ce.style.opacity = o;
+    ce.style.transform = `translateY(${(1 - o) * -14}px)`;
+  } else ce.style.opacity = 0;
+  // écran de fin
+  const e = clamp((t - 36.6) / 0.8);
+  $('#endcard').style.opacity = e;
+  $('#endcard').style.transform = `translateY(${(1 - e) * 20}px)`;
+};
+window.DURATION = DURATION;
+window.TAPS = TAPS;
+</script>
+</body>
+</html>

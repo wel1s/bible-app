@@ -120,6 +120,18 @@ tools/build.mjs       génération des données
 sw.js                 fonctionnement hors connexion
 ```
 
+## Vidéo de présentation
+
+`tools/video/` contient une vidéo de présentation animée (téléphone en 3D, vraie application filmée,
+légendes, musique douce et lecture audio de Jean 3:16), au format vertical 1080×1920 :
+
+```bash
+node tools/video/render.cjs promo.mp4          # ~3 min ; --preview pour un aperçu rapide
+```
+
+Le scénario (mouvements de caméra, légendes, actions dans l'application) se modifie en haut de
+`tools/video/promo.html`.
+
 ## Pistes pour la suite
 
 - Enregistrements des chapitres complets (nécessite un hébergement plus grand que GitHub Pages).
